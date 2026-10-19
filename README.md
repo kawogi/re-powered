@@ -1,7 +1,5 @@
 # re-powered - control what you own
 
-Status: This project is in a draft state. Whenever I have the time I'll update this page with ideas and decisions until (hopefully, eventually) the description reaches a state where implementing an MVP seems within reach. Until further notice, everything here will be suggestions rather than decisions. As soon as the implementations start, I'll make this doc a book and replace it with a quick-start guide.
-
 The goal of this project is to lay out a platform, which enables people to use Lego Technic as a platform for computer-controlled robotic constructions. The platform covers:
 
 - the choice of components (ideally cheap off-the-shelf components that are widely available and safe to handle)
@@ -12,6 +10,8 @@ The goal of this project is to lay out a platform, which enables people to use L
 - reference implementation of the framework for at least one common platform with an API description
 - support for scripting languages using that API with examples to get started
 - adapters for different topologies or existing components
+
+Status: _This project is in a draft state. Whenever I have the time I'll update this page with ideas and decisions until (hopefully, eventually) the description reaches a state where implementing an MVP seems within reach. Until further notice, everything here will be suggestions rather than decisions. As soon as the implementations start, I'll make this doc a book and replace it with a quick-start guide._
 
 ## About this project (the boring stuff)
 
@@ -81,6 +81,8 @@ Among the discontinued platforms, there's a noteworthy exception: Battery-packs,
 
 It looks like there's no Lego-oriented source for any Sensor, so that's the part where we have complete freedom.
 
+The EV3 platform has support for alternate firmwares and bluetooth. With some work it might be possible to integrate these components by remote-controlling them from the new controller.
+
 ### Hardware Topology
 
 None of the lego I'm aware of uses an addressing scheme for the connected components. All use the star topology, where all devices directly connnect to the single central controller.
@@ -90,6 +92,15 @@ None of the lego I'm aware of uses an addressing scheme for the connected compon
 - the daisy-chain is similar to a bus but permits implicit addressing by counting the number of hops from the controller. It has the same downsides for power-hungry devices as the daisy-chain. A microcontroller is required for each connected device.
 
 The power supply can be routed independently from the communication lines. This removes the power limitations from the bus and daisy-chain topology and gives more flexibility on where to place the components. Another benefit is that different voltages can be supplied to different devices. A downside is that more components are required, the builds become more complex and more wiring has to be laid out.
+
+The star topology is the only one that supports to connect _dumb_ devices that don't have a controller on board. Even raw motors and LEDs with almost no additional additional components are possible. While this sounds promising, there are still components required: capacitors for the motors, resistors for LEDs, connectors/sockets. Even the existing Power Function devices cannot be used as is, since their plug is proprietary and won't become the official connector. This means that _all_ devices require some soldering and PCB, making additional components less burdensome.
+
+Some read-made devices we likely want to support (Power Function motor and lights) require high power on the control lines. Given that we plan to detach the power supply from the control logic, it would make no sense to let the control lines run at an unusually high level of 9 V but something more common (3.3 V or 5 V). This means that even the ready-made components will not directly connect to the controller but through some adapter or hub. This in turn means that _all_ motors require some form of motor driver.
+
+So the minimal chain is: controller → motor driver → motor (where the motor driver accepts a high power input). In the case of a bus or protocol connection, the minimal chain would be: controller → bus logic → motor driver → motor. Where would we put the bus logic and the motor driver? Into an intermediate box or directly into the motor casing?
+
+For the existing Power Function motors, the driver cannot be integrated into the motor and an additional adapter cable would be required between it and the motor.
+
 
 ### Software Topology
 
@@ -115,13 +126,68 @@ The voltage levels to be discussed are:
 
 - 3.7 V various rechargable batteries (might as well be 2.0 V or up to 4.2 V).
 
-- 5 V widely available as cheap power source (via USB) and supported by various microcontrollers (AVR based Arduinos) and modules (sensors). LEDs and small motors can be driven as well. Not so much higher power motors.
+- 5 V widely available as cheap power source (via USB) and supported by various microcontrollers (AVR based Arduinos) and modules (sensors). LEDs and small motors can be driven as well. Not so much higher power motors. Servos commonly accept 5 V
 
-- 9 V is used by most Lego motors. Power supplies with wall plugs are cheap and widely available; same for battery packs. Re-chargable batteries are harder to source, though.
+- 7.2 V is being used by Spike Prime motors and some servos are capable of handling this voltage. This voltage is common for NiMH battery packs for RC cars.
 
-- 12 V - 24 V is used for stepper motors commonly used in 3D-Printers. They are rather heavy, and way too strong if fully powered but there seems to be no weaker replacement. We should test whether these can be reliably driven with 9 V as well.
+- 9 V is used by most Lego motors. Power supplies with wall plugs are cheap and widely available; same for battery packs. Re-chargable batteries are harder to source, though. Very few Powerbanks with 9 V support exist, and the available current is quite limited.
+
+- 12 V - 24 V is used for stepper motors commonly used in 3D-Printers. They are rather heavy, and way too strong if fully powered but there seems to be no weaker replacement. We should test whether these can be reliably driven with 9 V as well. There are powerbanks providing 12 V at high currents.
 
 I think there' no way around supporting 9 V for at least _some_ motors. If possible the power supply should be decoupled from the control lines. That's more wires, but gives more flexibility without complicating a single all-in-one-but-still-not-good-enough cable.
+
+#### Existing motors
+
+Here's a great overview for [Characteristics of various Lego Technic and Lego-compatible parts](https://brickexperimentchannel.wordpress.com/2023/11/15/characteristics-of-lego-parts/) for modern motors which can be summarized as:
+
+- 9 V nominal
+- about 1 W @ 0.1 A when idle
+- about 5 W @ 1 A when stalled (supply voltage broke down, limiting the current)
+
+The power supplies are able to provide 1 - 1.5 A, before the overcurrent protection kicks in.
+
+More information about even more exotic motors can be found in [Technic Motors compared characteristics](https://www.philohome.com/motors/motorcomp.htm).
+
+According to this source, the maximal current to be expected at 9 V is 2 A, where most motors max out a about 1 A. Some have internal protection through a thermistor (Epcos B1056, starts limiting at about 400 mA). Most motors max out at 5 W with a single one consuming a little over 6 W. A BZW04-15B, bidirectional transient voltage suppressor diode limits the max voltage to about 15 V.
+
+Overall efficiacy is best for 12 V (which is above official spec), good for 9 V and still acceptable for 7.5 V. Below that the efficiacy drops significantly, making a 5 V supply a non-option.
+
+We should at least land in the same ballpark with a replacement.
+
+Existing (non-lego) servo motors regularly accept 5 - 6 V but higher voltages seem to be unusual.
+
+The cheapest small motors that you can buy in bulk are rated for up to 6 V and 0.2 to 0.4 A. They're very fast (16k rpm). They could easily be used on the 5 V supply but no higher.
+
+Other small cheap motors are rated for 1,5–9 V, 3 V: 3500 U/min, 6 V: 6500 U/min
+
+Cheap gear motors are available for 5 V with 48 rpm @ 1 - 2W.
+
+Enough small gear motors are available for 9 V and 12 V as well - with various ratios.
+
+So there seems to be a split for servos, requiring 5-6 V and motors, commonly built for 9 V. That's unfortunate.
+
+A possible solution would be to provide a beefy built-in supply for 5 V to power Servos, small motors, LEDs, sensors, etc. and an external high power supply for bigger motors which will commonly be 7.2 - 9 V. Builders can still go beyond that value for custom parts without interfering with the rest of the system.
+
+The main open question would be what current the servos require and whether this can be transmitted safely using cable that have a cross-section meant for low power signals.
+
+#### Current conclusion
+
+- The control cables shall carry a 3.3 V line to supply sensors, I/O, etc.
+  - this will be provided by a converter from the 5.0 V line
+- The control cables shall carry a 5.0 V line for medium power devices (LEDs, small motors and (hopefully) servos, other controllers)
+  - this will commonly be provided by a power bank or wall plug
+  - alternatively it can be converted from a 7.2 V or 9 V power source
+- Devices requiring more power, shall have a dedicated power supply socket and be able to handle the range of at least 6 V to 9 V (the 6 V represents a partially discharged battery which nominally has 7.2 V). 12 V tolerance would be nice but shouldn't be required for all parts.
+
+Open problems:
+
+- providing enough power on the 5 V line for servos
+- powerbanks have suppport for 12 V but not 9 V. If you want to run on battery, you need a 5 V power bank and a separate 7.2 V battery.
+  - Alternative 1: the 5 V can be converted from 7.2 V as well, but the current might be very limited.
+  - Alternative 2: the 9 V can be converted from 12 V as well, but the current might be very limited.
+
+If cheaply possible, the main controller feeding the 5 V into system should have a USB-input (5 V) and a barrel jack socket for 7.2 V - 9 V or even up to 12 V.
+
 
 ### 3D-Models for printing
 
