@@ -110,6 +110,33 @@ Location of the applications logic:
 - controller: single built-in computer
 - mesh: each device may communicate with all others and decides on its own
 
+### Protocols
+
+TBD
+
+- direct (PWM, Analog, Bit-Banging, etc.)
+- [I²C/TWI](https://en.wikipedia.org/wiki/I2C)
+- [UART](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter), [USART](https://en.wikipedia.org/wiki/Universal_synchronous_and_asynchronous_receiver-transmitter)
+- [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface)
+- [CAN bus](https://en.wikipedia.org/wiki/CAN_bus)
+- [SMBus](https://en.wikipedia.org/wiki/System_Management_Bus)
+
+Clarify Push/Pull vs. OpenDrain.
+
+Clarify logic level and tolerance.
+
+Clarify device classes (Motor, Sensor, Mixed, …)
+
+Clarify device auto-detection and addressing
+
+Research gcode
+
+Noise immunity; differential signal?
+
+Research existing sensor boards and motor drivers.
+
+Maybe the clock signal (if present) can be used for timing in the peripheral (e.g. for gcode-like stepper control)
+
 ### Power supply
 
 Each power supply must be short-circuit proof (either by fuse or current-limiter).
@@ -188,6 +215,50 @@ Open problems:
 
 If cheaply possible, the main controller feeding the 5 V into system should have a USB-input (5 V) and a barrel jack socket for 7.2 V - 9 V or even up to 12 V.
 
+DC-DC converters from 7 - 12 V to 5 V @ 5 A are cheaply available. So 25 W output power on the 5 V line shouldn't be challenging to achieve. It remains to be seen whether this is enough in practice, but it looks good. This permits powering the entire system with a single 7.2 V (might be a bit close to 5 V) battery pack.
+
+There are DC-DC converters available for adjustable output as well that support 9 V @ 3 A or 9 V @ 5 A (peak) available. They require passive cooling. The main question is where to place the components.
+
+### Connectors and Wires (physical requirements)
+
+#### Peripherals (JST-XH 22 AWG)
+
+The most common connectors are [DuPont](https://en.wikipedia.org/wiki/Pin_header) and [JST](https://en.wikipedia.org/wiki/JST_connector). The former has no lock while the latter typically has one. Since we're dealing with moving and vibrating parts, a locking mechanism is mandatory, ruling out DuPont.
+
+JST is available in multiple sizes, pin pitches and pin count. For the best DIY soldering experience we chose from the models that have a pitch compatible with 2.54 mm (100 mils) breadboards. Unfortunately most plugs have a pitch of 2.5 mm. Only JST RE offers a true 2.54 mm pitch, but doesn't support locking. The deviation of 0.04 mm causes a 6-pin plug to be off by 0.2 mm when comparing the outermost pins. In practice this is ok. This leavs is with:
+
+- [JST-EH](https://www.jst-mfg.com/product/pdf/eng/eEH.pdf) rated at 3 A for AWG #22 (shroud but no lock)
+- [JST-XA](https://www.jst-mfg.com/product/pdf/eng/eXA-WB.pdf) rated at 3 A for AWG #22/#20 (shroud and lock)
+- [JST-XH](https://www.jst-mfg.com/product/pdf/eng/eXH.pdf) rated at 3 A for AWG #22 (shroud and lock)
+
+Current Lego Motors are driven by 26 AWG and ready-made JST cables are commonly available with 22 AWG - so there's plenty of room.
+
+JST-XH seems to be the most wide-spread connector of these three options, has a lock, is easy to install, has a shroud to protect against accidentally short-circuiting the pins and is available with 2 to 6 pins. Making it the preferred choice.
+
+If necessary, contacts can be crimped by hand using easy to source tools and material. Requires a bit of skill and practicing.
+
+#### Other connectors
+
+Stepper motors commonly use JST-PH connectors, which have a 2 mm pitch. If we plan to connect them, an adapter cable has to be used.
+
+Power banks and wall plugs offer a USB Type-C connector, so the controller board requires a matching socket.
+
+The 12 V socket on a power bank is typically a barrel coaxial power connector.
+
+A coaxial power connector is also the primary connector for a wall plug.
+
+7.2 V battery packs are typically sold with a Tamiya connector or a [JST-SM connector](https://www.jst-mfg.com/product/pdf/eng/eSM.pdf). Some are available with a JST-XH connector as well. A converter cable to a barrel jack plug should help to bring down the number of required sockets.
+
+*[Coaxial power connectors](https://en.wikipedia.org/wiki/Coaxial_power_connector)* come on a variety of shapes and dimensions. The most common are [IEC_60130-10](https://en.wikipedia.org/wiki/Coaxial_power_connector#IEC_60130-10) and [EIAJ](https://en.wikipedia.org/wiki/Coaxial_power_connector#EIAJ_power_connector) (aka "japan plug"). The latter has a little grove that makes it snap into position and in my experience is way more reliable than the IEC one which tends to become loose over time and it's hard to find the correct plug. Unfortunately the EIAJ plugs are rated for only 2 A and the one specified for 12 V (EIAJ-04, aka. JSPB4) has an internal male pin in the plug, which is a bit harder to source.
+
+Standard barrel jack connectors are usually rated for 2 A as well. That's likely ok, but given that all other selected plugs and cables are rated for 3 A, the main connector should not become the bottle neck. Luckily there are coaxial connectors that support 5 A with the same common dimensions but one has to specifically search for them. The most common dimensions for 12 V, 5 A seem to be:
+
+- 5.5 mm outer diameter
+- 2.1 or 2.5 mm inner diameter
+
+Both are named "IEC 60130-10 Type A", but are incompatible with each other, which is … unfortunate. I'd like to recommend exactly one of them, but there will be users not understanding the difference so that they'll end up with plugs that don't fit or have an unreliable contact.
+
+When searching for "barrel jack 5 A 5.5 mm" there seem to be slightly more offers for 2.1 mm inner diameter and these are listed first. Searching for power banks with 12 V connector, the DC5521 with 2-6 A comes up regularly but DC5525 do also exist. There are pre-made adapter cables available. So I'll go with that recommendation of DC5515 (outer diameter 5.5 mm and inner diameter 2.1 mm with a current rating of 5 A). But when assembling the part list, we should make sure to make people aware of this difference and also point out that the connectors and plugs shall be rated for 5 A.
 
 ### 3D-Models for printing
 
