@@ -101,6 +101,160 @@ So the minimal chain is: controller → motor driver → motor (where the motor 
 
 For the existing Power Function motors, the driver cannot be integrated into the motor and an additional adapter cable would be required between it and the motor.
 
+#### Requirements for devices
+
+Each device as we want to support has different requirements (power, voltage, logic level, protocol, connector, …). This list aims to collect all these requirements to derive a plan on how to support them with a hopefully small and comprehensive wiring scheme.
+
+- bare mid power DC motor
+  - mid power
+  - driven by 2-channel PWM
+  - requires a motor driver
+  - might require a thermistor and capacitor close to the motor
+- bare high power DC motor
+  - high power
+  - driven by 2-channel PWM
+  - requires a motor driver
+  - might require a thermistor and capacitor close to the motor
+- bare DC-motors with hall-sensor (actor/sensor combination)
+  - high power
+  - driven by 2-channel PWM
+  - requires a motor driver
+  - might require a thermistor and capacitor close to the motor  
+  - 2 analog or digital I/O for phase reading (4 quadrant)
+- servo motor
+  - mid power
+  - controled by a 1-channel PWM
+- small stepper motor
+  - mid power
+  - driven by 4-channel I/O through a 4-channel level shifter (e.g. ULN2003)
+  - Note: a common model has a 5-pin JST XH connector. Since we're also using this connector for other means, we might want to use more/fewer pins to make them phsically incompatible or make sure that if someone plugs the motor into a wrong socket, nothing bad happens.
+- large stepper motor
+  - high power
+  - driven by either 4-channel PWM using two motor drivers, or
+  - controlled and driven by a stepper motor controller using direction I/O and pulse
+- bare LED, dual-color-LED, RGB LED, dual/triple LED (two/three LEDs in one casing - e.g. for status or traffic light)
+  - mid power
+  - controlled by 1 to 3-channel PWM
+  - driven by 5 V + transistor + resistor or
+  - driven by LED-driver
+  - always-on LEDs would still require a resistor, connector and PCB and might not be worth developing at all.
+- LEDs with controller (NeoPixels, WS2812B, etc.)
+  - mid power
+  - controlled by protocol or bit-banging
+- Bargraph
+  - mid power
+  - same as 10-channel LED
+  - won't be doable without some logic in between
+- 7.1-segment display
+  - mid power
+  - same as 7-8-channel LED
+  - won't be doable without some logic in between
+- 7.1×8-segment LED or 8x8 matrix LED with integrated serial driver
+  - mid power
+  - e.g. [MAX7219/MAX7221](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX7219-MAX7221.pdf)
+  - SPI, QSPI, MICROWIRE
+- Speaker
+  - mid power
+  - PWM or analog
+  - requires some driver
+  - high data rate, so maybe a smarter device with pre-loaded sounds or MIDI-like support is better
+- MP3 player
+  - mid power
+  - serial communication or
+  - direct I/O control for button emulation
+- Buzzer
+  - mid power
+  - I/O + transistor + resistor
+- Display
+  - mid power
+  - higher level protocol
+  - pwm for background LED
+  - unsupported due to required data rate and cable noise - should be integrated into the main controller
+- Ultrasonic distance sensor
+  - mid power
+  - 2 I/O (1 send, 1 receive)
+- Potentiometer/Fader, joystick (clickable)
+  - low power
+  - requires 1 or 2 A/D converters
+  - 1 I/O for clicks
+- 4-quadrant decoder
+  - requires 2 I/Os (3 if clickable)
+- button, switch
+  - requires I/O and maybe some debouncing
+- keypad
+  - requires 8 to 12 I/Os
+  - not feasible without some logic
+- magnetic sensor (hall sensor)
+  - 1 I/O and maybe a transistor + resistor
+- infrared receiver board
+  - low power
+  - 1 I/O
+- infrared sender board
+  - mid power
+  - 1 I/O
+- accelerometer board
+  - low/mid power
+  - SPI
+- brightness sensor board
+  - low/mid power
+  - SPI, I²C
+- color sensor
+  - mid power
+  - 3 I/O + 1 Analog
+
+For most applications there exist ready-made boards from the arduino ecosystem which can be cheaply sourced and do not add to the complexity of the above list.
+
+#### Connection layers
+
+There needs to be a communication path between the devices (motors, LED, sensors) and the main controller. To make this work electrically and logic-wise, there need to be some converter in between. This converter can be a single components or multiple components chained together. First let's define the different connection layers between those components:
+
+- raw device: a hardware component without any external components that helps to interface with a microcontroller.
+  - Currents are usually too high, voltages as well, signals might be analog, noisy or just too many.
+  - examples: motors, LEDs
+- digital device: a hardware component that could be connected to a common microcontroller.
+  - power supply is independent of logic I/O
+  - I/O voltage level is compatible with the controller
+  - no analog in-/outputs
+  - no high data rate
+  - connectors and pinouts differ between devices (might be SPI, I/O, bit-banging, PWM, …)
+  - examples: motor drivers, LED-drivers, most Arduino sensor boards, de-bounced buttons
+- universal device: a hardware component that has a universal connector defined by this framework
+  - pinout TBD
+  - protocol TBD
+  - device classes TBD (there might be differend connectors)
+  - device detection TBD
+  - support for bus/daisy-chain
+  - support for device auto-detection
+  - a universal device will likely be implemented as adapter to a digital device but might as well be a self-contained device
+  - a universal device may address multiple digital devices (e.g. by accupying an address range). This will make it possible to build a physical hierarchy, where some hub may transparently be used to replace multiple single-device converters. These hubs can also be used to supply power to the devices.
+  - each universal device requires a microcontroller with a firmware
+  - depending on whether we want to support daisy chaining, some dip-switches to configure an address might be helpful. Alternatively an address can be flashed by some helper software or a pairing button.
+
+In the first implementation stage we shall focus on the digital devices. These are off-the shelf components that just need a housing. The wiring will be ordinary jumper cables directly connected to some microcontroller board (Raspberry Pi Pico, Arduino, ESP, etc.). This will make it possible to re-use existing software ecosystems. Some devices (esp. motors) will require some effort to be powered, as these might require some extra cables that might not get connected to the controller board but some other power source.
+
+In the next stage universal devices shall be developed to improve mechanical stability and make connections fool-proof. This will likely increase the size of most devices due to extra components, unless someone develops a dedicated PCB containing all components.
+
+Open questions: where do universal devices get their power from? Will there be support of an extra cable on each device? Or maybe by default power will be supplied over the universal device connector but some splitter cables support injecting alternative power sources for special applications. I think that every hub with a fan-out shall be able to receive some extra power (similar to USB hubs).
+
+#### Universal device
+
+The main question is what interface to use for the communication between the controller and the devices. It should be something that is commonly supported and fits the physical topology.
+
+*UART/USART* is available on almost every microcontroller and cheap USB adapters are easy to source. The latter makes it possible to connect every device to a PC for testing, debugging or even flashing. If there are too few serial ports (most controllers only have 2), it can be implemented in software - there libraries are widely available. to A downside is that it's only point-to-point, making it very hard to use on a bus. Daisy-chaining would still be possible. Another thing to consider is, that there's no built-in addressing, requiring a specification for that, too. OTOH we have complete freedom of how to use which kind of addresses. A nice property might be that UART level is high by default so maybe there's a way to detect added/removed components at run-time. UART can be driven in Push/Pull mode, making it possible to use in a noisy environment (differential would still be better, but it's not as bad as weakly driven lines). When designing a pinout and cables, care has to be taken to only connect RX←→TX and never RX←→RX or TX←→TX.
+
+*SPI* is a simple, well-supported protocol, which has bus-capabilities, but the selection of the addressed device still requires a separate signal to each component. This makes it unsuitable for the implementation of a hub or bus with external wires to an unknown number of receivers.
+
+*I²C* is also a simple, well-supported protocol with bus topology in mind. It avoids collisions and has a built-in addressing mechanism. Ready made components often share the same address with no or little means to change them. This makes it hard to combine certain sensors. To fix that we need freely programmable components where the address can be re-programmed. I²C to USB adapters aren't that common so interfacing with a PC might be harder. The 7 bit address space is good enough for our use case. The connection is open-drain, so it's likely prone to noise. Common data rates of 100 kbit/s might be hard to achieve reliably without shielding. It was created for communication on the same PCB.
+
+*CAN bus* is another alternative, but controllers with CAN support aren't that common for a maker to use.
+
+If every hub is an active component with a controller, and no bus is present, addressing devices can be done in two ways:
+
+- Each device gets a programmable address. This makes devices independent of the wiring but is harder to do. There might be collisions as well.
+- Devices get enumerated by their physical location. The number of available ports is known to each hub and can be reported.
+- As a third option both techniques can be used together: each device has a logical, programmable address and a physical unique address determined by the topology. This way multiple devices may get the same address/name/id which can even be a readable string for debugging but responses can still be distinguished by their physical address/locator. The protocol itself will only use the physical address for performance reasons, but at start each device can get it's name read out.
+
+For the first implementation only the physical address shall be used. Logical names and device groups can be defined in software.
 
 ### Software Topology
 
@@ -199,16 +353,21 @@ The main open question would be what current the servos require and whether this
 
 #### Current conclusion
 
-- The control cables shall carry a 3.3 V line to supply sensors, I/O, etc.
-  - this will be provided by a converter from the 5.0 V line
-- The control cables shall carry a 5.0 V line for medium power devices (LEDs, small motors and (hopefully) servos, other controllers)
-  - this will commonly be provided by a power bank or wall plug
-  - alternatively it can be converted from a 7.2 V or 9 V power source
-- Devices requiring more power, shall have a dedicated power supply socket and be able to handle the range of at least 6 V to 9 V (the 6 V represents a partially discharged battery which nominally has 7.2 V). 12 V tolerance would be nice but shouldn't be required for all parts.
+There shall be three voltage levels in each system:
+
+- Low Power Supply: 3.3 V (well stabilized) - used for logic levels and low power controllers
+  - this will be provided by a converter from the 5.0 V mid power supply
+- Mid Power Supply: 5.0 V (stabilized) - used for small devices and maybe support some controllers that require 5 V to run.
+  - Provides enough power for regular components (LEDs, small motors and (hopefully) servos, other controllers)
+  - this will commonly be provided by a USB power bank or wall plug
+  - If a connected device requires more power, it should convert from the 7 - 9 V high power supply.
+- High Power Supply: 7 to 9 V (unstabilized) - used for devices that draw significant power (like motors). The voltage level and might change throughout the operation and may exceed the voltage in both directions due to tolerances and discharge. It is acceptable for a component to perform differently for various input voltages, but it should be designed to not take damage if the voltage reaches 6 V to 10 V.
+  - commonly provided by a wall plug or power bank
+  - 12 V or higher can be supported as well but since not all devices are required to support this voltage, care must be taken.
 
 Open problems:
 
-- providing enough power on the 5 V line for servos
+- providing enough power on the 5 V line for servos (looks like they draw 0.5 A for holding the position without load, 1.5 A when stalled and 10 mA when idle). So the current is in the same ballpark as regular motors.
 - powerbanks have suppport for 12 V but not 9 V. If you want to run on battery, you need a 5 V power bank and a separate 7.2 V battery.
   - Alternative 1: the 5 V can be converted from 7.2 V as well, but the current might be very limited.
   - Alternative 2: the 9 V can be converted from 12 V as well, but the current might be very limited.
