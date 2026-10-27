@@ -256,6 +256,40 @@ If every hub is an active component with a controller, and no bus is present, ad
 
 For the first implementation only the physical address shall be used. Logical names and device groups can be defined in software.
 
+#### Pinout
+
+The required pins for each device are:
+
+- +5 V
+- GND
+- RX
+- TX
+- +7 to +9 V (only high power)
+- GND for high power return
+
+Mid and Low power devices won't need a supply for 9 V and shouldn't be bothered with providing these extra pins. Another thing to consider is that high power devices might have different voltage requirement. For this reason, the connection to the devices is split into two connectors.
+
+Universal connector:
+
+1. +5 V
+2. GND
+3. RX
+4. TX
+
+The pins are ordered in a way that should make it hard to accidentally damage components by shortening two adjacent pins. RX/TX aren't 5 V tolerant so GND is used to separate them. Shortening RX and TX is always safe as it just creates a loop-back. Shortening GND with RX is safe as 0 V is a valid input value. Shortening +5 V with GND is the same as overloading the power supply, which is something we need to protect against anyway.
+
+TODO decide whether the sockets on both ends shall be identical (requiring cross-over cables) or have their RX/TX mirrored. Mirroring would be the preferred choice but it will position TX next to GND. If shortened, TX (which is usually a Push/Pull @ 3.3 V) might draw an excessive amount of power which might damage the sender. A series resistor or other extra components can protect against this kind of failure. It has to been chose whether the sender (controller) or receiver (device) shall have their pins flipped. Devices are cheaper to replace than a controller, but controllers have more room for protection circuitry. So I guess the most sensible choice would be use the above pinout for the receivers (devices) and flip RX/TX for the sender (controller).
+
+Power connector:
+
+1. +7 to +9 V (or beyond for custom extensions)
+2. GND
+
+The ordering of these pins has been chosen for two reasons:
+
+1. symmetry with the universal connector
+2. if both connectors are laid out next to each other, it is expected that the high power connector will be closer to pin 1 (+5 V) than pin 4 (TX/RX) to protect them. This proximity to pin 1 makes the GND pin of the power connector a safer neighbor than +9 V, which might damage the low power device-electronics when shortened.
+
 ### Software Topology
 
 Location of the applications logic:
