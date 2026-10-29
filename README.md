@@ -276,9 +276,9 @@ Universal connector:
 3. RX
 4. TX
 
-The pins are ordered in a way that should make it hard to accidentally damage components by shortening two adjacent pins. RX/TX aren't 5 V tolerant so GND is used to separate them. Shortening RX and TX is always safe as it just creates a loop-back. Shortening GND with RX is safe as 0 V is a valid input value. Shortening +5 V with GND is the same as overloading the power supply, which is something we need to protect against anyway.
+The pins are ordered in a way that should make it hard to accidentally damage components by shortening two adjacent pins. RX/TX aren't 5 V tolerant so GND is used to separate them. Shortening RX and TX is always safe as it just creates a loop-back. Shortening GND with RX is safe as 0 V is a valid input level. Shortening +5 V with GND is the same as overloading the power supply, which is something we need to protect against anyway.
 
-TODO decide whether the sockets on both ends shall be identical (requiring cross-over cables) or have their RX/TX mirrored. Mirroring would be the preferred choice but it will position TX next to GND. If shortened, TX (which is usually a Push/Pull @ 3.3 V) might draw an excessive amount of power which might damage the sender. A series resistor or other extra components can protect against this kind of failure. It has to been chose whether the sender (controller) or receiver (device) shall have their pins flipped. Devices are cheaper to replace than a controller, but controllers have more room for protection circuitry. So I guess the most sensible choice would be use the above pinout for the receivers (devices) and flip RX/TX for the sender (controller).
+TODO decide whether the sockets on both ends shall be identical (requiring cross-over cables) or have their RX/TX mirrored. Mirroring would be the preferred choice but it will position TX next to GND. If shortened, TX (which is usually a Push/Pull @ 3.3 V) might draw an excessive amount of power which might damage the sender. A series resistor or other extra components can protect against this kind of failure. It has to been chosen whether the sender (controller) or receiver (device) shall have their pins flipped. Devices are cheaper to replace than a controller, but controllers have more room for protection circuitry. So I guess the most sensible choice would be use the above pinout for the receivers (devices) and flip RX/TX for the sender (controller).
 
 Power connector:
 
@@ -297,6 +297,14 @@ Location of the applications logic:
 - thin client, remote controlled: logic in PC, Tablet, Phone
 - controller: single built-in computer
 - mesh: each device may communicate with all others and decides on its own
+
+### Software Stack
+
+All systems software shall be written in the Rust programming language. It's a modern, safe, performant language that has real-time capabilities, is light on resources and has good support for robust programs on bare metal devices. Compared to alternatives it has a steeper learning curve.
+
+It is yet to be decided which language to use for scripting the application logic (robot control). Lightweight controllers (Arduino, rp2040) aren't capable of hosting a Python or Java runtime. Alternatives might be MicroPython, CircuitPython or Lua-based languages. Rust will always be an option, but isn't suitable for beginners. There are other languages that can be interpreted but are lesser known. Another option would be to use a webassembly runtime, permitting the development in multiple other languages (AssemblyScript, Rust), but classical scripting languages might be too heavy to target WebAssembly as they heavily rely on memory allocations, garbage collection and a runtime with standard library.
+
+On beefier machines (Raspberry Pi), all runtimes (Python, JavaScript, Java, Go) are thinkable. Ideally all of these languages can be supported by using a common API.
 
 ### Protocols
 
