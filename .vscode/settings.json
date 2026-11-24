@@ -1,0 +1,9 @@
+{
+    "editor.rulers": [
+        100,
+        120
+    ],
+    "rust-analyzer.linkedProjects": [
+        "embedded/rp2040/Cargo.toml"
+    ]
+}

@@ -13,6 +13,11 @@ The goal of this project is to lay out a platform, which enables people to use L
 
 Status: _This project is in a draft state. Whenever I have the time I'll update this page with ideas and decisions until (hopefully, eventually) the description reaches a state where implementing an MVP seems within reach. Until further notice, everything here will be suggestions rather than decisions. As soon as the implementations start, I'll make this doc a book and replace it with a quick-start guide._
 
+## Prerequisites for working on this repository
+
+- [Install a rust toolchain](https://rust-lang.org/learn/get-started/)
+- Install the target required for the rp2040: `rustup target add thumbv6m-none-eabi`
+
 ## About this project (the boring stuff)
 
 The name of this project shall reflect the desire to regain the power over your robotic platform. In this context _re-power_ also maps to switching on old builds and a re-iteration of the former Lego platforms _Power Functions_ and _Powered Up_.
@@ -359,6 +364,8 @@ The voltage levels to be discussed are:
 
 I think there' no way around supporting 9 V for at least _some_ motors. If possible the power supply should be decoupled from the control lines. That's more wires, but gives more flexibility without complicating a single all-in-one-but-still-not-good-enough cable.
 
+Add a polyfuse and polarity protection to protect against short-circuits and mis-use. Maybe add undervoltage protection for battery-packs.
+
 #### Existing motors
 
 Here's a great overview for [Characteristics of various Lego Technic and Lego-compatible parts](https://brickexperimentchannel.wordpress.com/2023/11/15/characteristics-of-lego-parts/) for modern motors which can be summarized as:
@@ -476,3 +483,11 @@ For some peripherals there's no Lego-compatible housing. We should provide a 3D-
 - casings that require a certain sturdyness or temperature resistance may demand printing with something stronger than PLA (e.g. PETG)
 
 The casing shall be easy to open later for repair and maintenance, so screws cutting into the plastics should be avoided if possible. If screws are required, it should be M 3 (3 mm) which are widely available, cheap, easy to work with and sturdy. The max diameter of approx 6 mm for an M5 hex nut should neatly fit into the 8 mm grid of the Lego parts. Snap tabs should be avoided as they tend to break. If the model is made of multiple smaller parts, glueing can be acceptable, as long as the casing as a whole permits servicing the inside parts.
+
+# Law
+
+This project isn't meant as _toy_ but education of engineering skills. It's targeting students at the age of 14 or older.
+
+All sorts of warnings are required to protect against lawsuits.
+
+Versioning, Test-Protocols as proof of due diligence

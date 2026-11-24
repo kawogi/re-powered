@@ -1,0 +1,29 @@
+[package]
+name = "device-drv8833-dc-motor"
+version = "0.1.0"
+edition.workspace = true
+
+[[bin]]
+name = "device-drv8833-dc-motor"
+path = "src/main.rs"
+test = false
+doctest = false
+bench = false
+
+[dependencies]
+cortex-m-rt.workspace = true
+embedded-hal.workspace = true
+panic-halt.workspace = true
+smart-leds.workspace = true
+waveshare-rp2040-zero.workspace = true
+ws2812-pio.workspace = true
+
+#embedded-hal_0_2 = { workspace = true, features = ["unproven", ] }
+#rp2040-boot2 = { workspace = true }
+#rp2040-hal.workspace = true
+#cortex-m.workspace = true
+#fugit.workspace = true
+#nb.workspace = true
+
+[lints]
+workspace = true
