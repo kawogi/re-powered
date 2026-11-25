@@ -1,6 +1,6 @@
 # re-powered - control what you own
 
-The goal of this project is to lay out a platform, which enables people to use Lego Technic as a platform for computer-controlled robotic constructions. The platform covers:
+The goal of this project is to lay out a platform, which enables people to use LEGO® Technic elements as a platform for computer-controlled robotic constructions. The platform covers:
 
 - the choice of components (ideally cheap off-the-shelf components that are widely available and safe to handle)
 - electric topology and specifications (how to connect the parts)
@@ -20,13 +20,13 @@ Status: _This project is in a draft state. Whenever I have the time I'll update 
 
 ## About this project (the boring stuff)
 
-The name of this project shall reflect the desire to regain the power over your robotic platform. In this context _re-power_ also maps to switching on old builds and a re-iteration of the former Lego platforms _Power Functions_ and _Powered Up_.
+The name of this project shall reflect the desire to regain the power over your robotic platform. In this context _re-power_ also maps to switching on old builds and a re-iteration of the former LEGO® platforms _Power Functions_ and _Powered Up_.
 
 ### Motivation (why this project exists)
 
-Long story short: Lego effectively killed/discontinued all robotic platforms, but I do not accept that.
+Long story short: LEGO® effectively killed/discontinued all robotic platforms, but I do not accept that.
 
-I have a pile of Lego in my basement and cannot buy more components to build something big. Schools are relying on the materal and tools for ther lessons, but are no longer able to replace broken parts. There's no replacement in sight and I will never invest into a robotic platform provided by Lego ever again. All existing parts have proprietary connectors which makes it unnecessarily hard to create a DIY replacement.
+I have a pile of LEGO® bricks in my basement and cannot buy more components to build something big. Schools are relying on the materal and tools for ther lessons, but are no longer able to replace broken parts. There's no replacement in sight and I will never invest into a robotic platform provided by the LEGO® Group ever again. All existing parts have proprietary connectors which makes it unnecessarily hard to create a DIY replacement.
 
 I searched the web for a proper replacement, but all alternatives are either relying on hard-to-source parts, unmaintained or straight up require to buy into the next proprietary platform.
 
@@ -80,17 +80,17 @@ It's also possible that the actual controller ends up being a software component
 
 ### Component selections
 
-Most of the original lego parts have been discontinued and shouldn't be relied upon. While support for legacy motors and sensors isn't a goal for this project, it shall still contain the information necessary to build adapters. For this to work the existing components shall at least be well understood so that this remains a viable option.
+Most of the original LEGO® parts have been discontinued and shouldn't be relied upon. While support for legacy motors and sensors isn't a goal for this project, it shall still contain the information necessary to build adapters. For this to work the existing components shall at least be well understood so that this remains a viable option.
 
 Among the discontinued platforms, there's a noteworthy exception: Battery-packs, motors, lights, switches, cables and remote controls for the _Power Functions_ series are still being produced by competitors at a reasonable price and good availability. It's worth making the integration of these parts as frictionless as possible.
 
-It looks like there's no Lego-oriented source for any Sensor, so that's the part where we have complete freedom.
+It looks like there's no LEGO®-oriented source for any Sensor, so that's the part where we have complete freedom.
 
 The EV3 platform has support for alternate firmwares and bluetooth. With some work it might be possible to integrate these components by remote-controlling them from the new controller.
 
 ### Hardware Topology
 
-None of the lego I'm aware of uses an addressing scheme for the connected components. All use the star topology, where all devices directly connnect to the single central controller.
+None of the LEGO® I'm aware of uses an addressing scheme for the connected components. All use the star topology, where all devices directly connnect to the single central controller.
 
 - the star topololy is simple to build and understand, but might require a lots of cables to be routed.
 - the bus topology allows to connect multiple devices to a single cable. It requires addresses for each connected device, and maybe collision detection which might be hard to implement. If multiple power-hungry devices are connected to a single bus, the source might not be able to provide the required power. Mechanically a bus requires plugs that do not interrupt the cable, which limits the available options. A microcontroller is required for each connected device.
@@ -358,7 +358,7 @@ The voltage levels to be discussed are:
 
 - 7.2 V is being used by Spike Prime motors and some servos are capable of handling this voltage. This voltage is common for NiMH battery packs for RC cars.
 
-- 9 V is used by most Lego motors. Power supplies with wall plugs are cheap and widely available; same for battery packs. Re-chargable batteries are harder to source, though. Very few Powerbanks with 9 V support exist, and the available current is quite limited.
+- 9 V is used by most LEGO® motors. Power supplies with wall plugs are cheap and widely available; same for battery packs. Re-chargable batteries are harder to source, though. Very few Powerbanks with 9 V support exist, and the available current is quite limited.
 
 - 12 V - 24 V is used for stepper motors commonly used in 3D-Printers. They are rather heavy, and way too strong if fully powered but there seems to be no weaker replacement. We should test whether these can be reliably driven with 9 V as well. There are powerbanks providing 12 V at high currents.
 
@@ -368,7 +368,7 @@ Add a polyfuse and polarity protection to protect against short-circuits and mis
 
 #### Existing motors
 
-Here's a great overview for [Characteristics of various Lego Technic and Lego-compatible parts](https://brickexperimentchannel.wordpress.com/2023/11/15/characteristics-of-lego-parts/) for modern motors which can be summarized as:
+Here's a great overview for [Characteristics of various LEGO® Technic and LEGO®-compatible parts](https://brickexperimentchannel.wordpress.com/2023/11/15/characteristics-of-lego-parts/) for modern motors which can be summarized as:
 
 - 9 V nominal
 - about 1 W @ 0.1 A when idle
@@ -384,7 +384,7 @@ Overall efficiacy is best for 12 V (which is above official spec), good for 9 V 
 
 We should at least land in the same ballpark with a replacement.
 
-Existing (non-lego) servo motors regularly accept 5 - 6 V but higher voltages seem to be unusual.
+Existing (non-LEGO®) servo motors regularly accept 5 - 6 V but higher voltages seem to be unusual.
 
 The cheapest small motors that you can buy in bulk are rated for up to 6 V and 0.2 to 0.4 A. They're very fast (16k rpm). They could easily be used on the 5 V supply but no higher.
 
@@ -439,7 +439,7 @@ JST is available in multiple sizes, pin pitches and pin count. For the best DIY 
 - [JST-XA](https://www.jst-mfg.com/product/pdf/eng/eXA-WB.pdf) rated at 3 A for AWG #22/#20 (shroud and lock)
 - [JST-XH](https://www.jst-mfg.com/product/pdf/eng/eXH.pdf) rated at 3 A for AWG #22 (shroud and lock)
 
-Current Lego Motors are driven by 26 AWG and ready-made JST cables are commonly available with 22 AWG - so there's plenty of room.
+Current LEGO® Motors are driven by 26 AWG and ready-made JST cables are commonly available with 22 AWG - so there's plenty of room.
 
 JST-XH seems to be the most wide-spread connector of these three options, has a lock, is easy to install, has a shroud to protect against accidentally short-circuiting the pins and is available with 2 to 6 pins. Making it the preferred choice.
 
@@ -470,19 +470,19 @@ When searching for "barrel jack 5 A 5.5 mm" there seem to be slightly more offer
 
 ### 3D-Models for printing
 
-For some peripherals there's no Lego-compatible housing. We should provide a 3D-printable casing for the most common devices that are expected to end up in most builds. These models shall:
+For some peripherals there's no housing compatible with LEGO® elements. We should provide a 3D-printable casing for the most common devices that are expected to end up in most builds. These models shall:
 
 - safely enclose the actuator or sensor (no risk of injury when touching with bare hands)
 - provide enough ventilation in the case of high power consumption
 - provide support for the circuit board which connects the sockets with the actual device
-- make it possible to connect to a Lego build using widely available studs; outlets shall adhere to Lego's 8 mm grid
+- make it possible to connect to a LEGO® build using widely available studs; outlets shall adhere to the 8 mm module used by LEGO® elements
 - have the right amount of tolerance to make them work for a wide range of commodity printers without being too loose for perfectly calibrated models
 - if possible, they should be printable without requiring supports.
-- if necessary, the model can be split into multiple parts; for motors an adapter (wheel) might be required to connect the bare metal axis with Lego components
+- if necessary, the model can be split into multiple parts; for motors an adapter (wheel) might be required to connect the bare metal axis with LEGO® components
 - printing of toothed gears shall be avoided because the required precision might be hard to achieve
 - casings that require a certain sturdyness or temperature resistance may demand printing with something stronger than PLA (e.g. PETG)
 
-The casing shall be easy to open later for repair and maintenance, so screws cutting into the plastics should be avoided if possible. If screws are required, it should be M 3 (3 mm) which are widely available, cheap, easy to work with and sturdy. The max diameter of approx 6 mm for an M5 hex nut should neatly fit into the 8 mm grid of the Lego parts. Snap tabs should be avoided as they tend to break. If the model is made of multiple smaller parts, glueing can be acceptable, as long as the casing as a whole permits servicing the inside parts.
+The casing shall be easy to open later for repair and maintenance, so screws cutting into the plastics should be avoided if possible. If screws are required, it should be M 3 (3 mm) which are widely available, cheap, easy to work with and sturdy. The max diameter of approx 6 mm for an M5 hex nut should neatly fit into the 8 mm grid of the LEGO® parts. Snap tabs should be avoided as they tend to break. If the model is made of multiple smaller parts, glueing can be acceptable, as long as the casing as a whole permits servicing the inside parts.
 
 # Law
 
@@ -491,3 +491,7 @@ This project isn't meant as _toy_ but education of engineering skills. It's targ
 All sorts of warnings are required to protect against lawsuits.
 
 Versioning, Test-Protocols as proof of due diligence
+
+## Legal disclaimer
+
+LEGO® is a trademark of the LEGO Group of companies, which does not sponsor, authorize, or endorse this project.
