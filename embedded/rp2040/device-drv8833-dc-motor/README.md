@@ -2,4 +2,4 @@
 
 ## Build instructions
 
-See the [general prerequisites for this platorm](../README.md#prerequisites).
+See the [general prerequisites for this platform](../README.md#prerequisites).

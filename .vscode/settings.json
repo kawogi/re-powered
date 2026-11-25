@@ -5,5 +5,24 @@
     ],
     "rust-analyzer.linkedProjects": [
         "embedded/rp2040/Cargo.toml"
+    ],
+    "cSpell.words": [
+        "eabi",
+        "EIAJ",
+        "Epcos",
+        "JSPB",
+        "libudev",
+        "MICROWIRE",
+        "Mindstorms",
+        "PETG",
+        "Pico",
+        "QSPI",
+        "rustup",
+        "Tamiya",
+        "Technik",
+        "thumbv",
+        "UART",
+        "unstabilized",
+        "USART"
     ]
 }

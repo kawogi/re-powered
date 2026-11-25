@@ -1,4 +1,4 @@
-# Workspace containing all crates targeting the rp2040 microcontroller
+# Workspace containing all crates targeting the rp2040 micro-controller
 
 ## Prerequisites
 
