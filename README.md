@@ -484,7 +484,7 @@ For some peripherals there's no housing compatible with LEGO® elements. We shou
 
 The casing shall be easy to open later for repair and maintenance, so screws cutting into the plastics should be avoided if possible. If screws are required, it should be M 3 (3 mm) which are widely available, cheap, easy to work with and sturdy. The max diameter of approx 6 mm for an M5 hex nut should neatly fit into the 8 mm grid of the LEGO® parts. Snap tabs should be avoided as they tend to break. If the model is made of multiple smaller parts, glueing can be acceptable, as long as the casing as a whole permits servicing the inside parts.
 
-# Law
+## Law
 
 This project isn't meant as _toy_ but education of engineering skills. It's targeting students at the age of 14 or older.
 
@@ -495,3 +495,33 @@ Versioning, Test-Protocols as proof of due diligence
 ## Legal disclaimer
 
 LEGO® is a trademark of the LEGO Group of companies, which does not sponsor, authorize, or endorse this project.
+
+## About Robots (LLM and AI)
+
+Everyone has a different opinion on that kind of LLM-assistance they find acceptable for a project. In this (super boring) chapter I'll try to disclose what my personal opinion on that matter is and what I'd like others to respect when working on this project.
+
+The core part of this project has primarily been created with good old read and research, trial and error, tears and sweat. It took me quite a while to accept help from a soulless mechanical parrot and learn how to use it to everyone's advantage. Without that support I probably wouldn't have published anything and kept the project in a _works for me_ state. Here's how I use LLMs, what I find helpful/acceptable and what I don't.
+
+Helpful and acceptable:
+
+- I expect everyone to feel responsible for their use of LLMs. "The bot did it" is no valid excuse.
+- I generally endorse read-only analysis of the entire project.
+- I explicitly try to lay everything out in a way that ensures the LLM's context and my mental model stay aligned
+- find contradictions and plot-holes
+- explore technologies and find related topics that are worth considering
+- second opinion on everything, especially on safety-related stuff
+- as I'm not a native speaker, I'll try at least to get rid of blatant errors and phrases that might get misunderstood
+- ensure translations stay in sync
+- sum up web content to decide on whether it's worth reading as a whole
+- help me with paperwork (that was a huge ~~life~~time saver here in Germany)
+- generally keep my head free from side-quests (web-hosting, CI) so that I can focus on the core of this project - otherwise I might never come back from [yak-shaving](https://en.wiktionary.org/wiki/yak_shaving)
+- generate a base set of unit tests
+- generate checklists
+- code assistance (fill in the middle)
+
+What's not acceptable:
+
+- generating documentation as a whole; documentation _is_ the core of this project.
+- generating larger chunks of code that shall be maintained and understood by a human. One-off tools and auxiliary stuff are generally ok if it's properly disclosed and documented in a way that makes its intention clear. Nothing important shall depend on that.
+- generating PRs; PRs are only helpful if they don't waste my time reading through low-effort slop I could've generated on my own.
+- that I no longer can use `–` or `—` without being called out
